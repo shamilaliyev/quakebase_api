@@ -24,6 +24,20 @@ QuakeBase API is a backend application for global earthquake data. It supports:
 
 ---
 
+## Live URL
+
+https://quakebase-api.onrender.com/
+
+## Swagger Documentation
+
+https://quakebase-api.onrender.com/docs
+
+## Example API Endpoint
+
+https://quakebase-api.onrender.com/earthquakes?page=1&limit=20
+
+---
+
 ## Repository Structure
 
 ```text
