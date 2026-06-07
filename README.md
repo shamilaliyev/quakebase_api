@@ -1,40 +1,36 @@
 # QuakeBase API
 
-QuakeBase API is a backend application for global earthquake data. It supports:
+QuakeBase API is a FastAPI backend project that provides global earthquake data. It serves earthquake information sourced from the USGS Earthquake API and is deployed on Render.
 
-- public read access for earthquake listings and details
-- authenticated creation, update, and deletion of earthquake records
-- pagination, filtering, and caching
-- JWT authentication with OAuth2 Bearer tokens
-
-**Author:** Shamil Aliyev
+**Author:** Lale Nasibova
 
 ---
 
 ## Highlights
 
-- FastAPI backend with Swagger UI at `/docs`
-- Public `GET /earthquakes` and `GET /earthquakes/{id}`
-- Protected `POST`, `PUT`, `PATCH`, and `DELETE` endpoints
-- Pagination with a hard maximum of 20 records per request
-- Optional Redis caching with graceful fallback
-- Automatic database table creation on startup
-- Seed script with at least 1,000 earthquake records
-- Docker-ready deployment
+- FastAPI backend with Swagger documentation at `/docs`
+- Public earthquake data available without authentication
+- Authenticated create, update, and delete support for earthquake records
+- Pagination with a maximum of 20 results per page
+- PostgreSQL database support via SQLAlchemy
+- JWT Bearer token authentication
+- Redis caching support with graceful fallback
+- Deployed on Render
+- Postman documentation available
 
 ---
 
-## Live URL
+## Deployment Links
 
-https://quakebase-api.onrender.com/
+- Live API URL: https://quakebase-api.onrender.com/
+- Swagger Documentation: https://quakebase-api.onrender.com/docs
+- Example Earthquake Endpoint: https://quakebase-api.onrender.com/earthquakes?page=1&limit=20
 
-## Swagger Documentation
+---
 
-https://quakebase-api.onrender.com/docs
+## Postman Documentation
 
-## Example API Endpoint
-
-https://quakebase-api.onrender.com/earthquakes?page=1&limit=20
+- Postman Documentation: https://documenter.getpostman.com/view/55551373/2sBXwqrAPG
 
 ---
 
@@ -61,6 +57,24 @@ quakebase_api/
 ├── .env.example
 └── .gitignore
 ```
+
+---
+
+## Project Overview
+
+QuakeBase API delivers earthquake records collected from the USGS Earthquake API. The deployed database contains 1,200 real earthquake records and supports both public access and authenticated administrative operations.
+
+Public users can:
+
+- fetch earthquake listings
+- view earthquake details
+- use pagination and filters
+
+Authenticated users can:
+
+- create earthquake records
+- update earthquake records
+- delete earthquake records
 
 ---
 
@@ -137,7 +151,7 @@ Populate the database with earthquake records:
 python -m app.seed_data
 ```
 
-The script attempts to download real earthquake data from the USGS API. If that fails or returns fewer than 1,000 records, it generates 1,200 sample records.
+The seed script attempts to download real earthquake data from the USGS API. If that fails or returns fewer than 1,000 records, it generates 1,200 sample records.
 
 ---
 
