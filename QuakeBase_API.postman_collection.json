@@ -1,0 +1,109 @@
+{
+  "info": {
+    "name": "QuakeBase API",
+    "description": "Postman collection for QuakeBase API. Replace {{base_url}} with your local or deployed URL.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Root",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/"
+      }
+    },
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"shamil\",\n  \"email\": \"shamil@example.com\",\n  \"password\": \"password123\"\n}"
+        },
+        "url": "{{base_url}}/auth/register"
+      }
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/x-www-form-urlencoded"}],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            {"key": "username", "value": "shamil", "type": "text"},
+            {"key": "password", "value": "password123", "type": "text"}
+          ]
+        },
+        "url": "{{base_url}}/auth/login"
+      }
+    },
+    {
+      "name": "Me",
+      "request": {
+        "method": "GET",
+        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{token}}", "type": "string"}]},
+        "url": "{{base_url}}/auth/me"
+      }
+    },
+    {
+      "name": "List Earthquakes",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/earthquakes?page=1&limit=20"
+      }
+    },
+    {
+      "name": "Get Earthquake By ID",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/earthquakes/1"
+      }
+    },
+    {
+      "name": "Create Earthquake",
+      "request": {
+        "method": "POST",
+        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{token}}", "type": "string"}]},
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"usgs_id\": \"manual-001\",\n  \"place\": \"Baku, Azerbaijan region\",\n  \"magnitude\": 4.5,\n  \"time\": \"2026-06-07T12:00:00Z\",\n  \"latitude\": 40.4093,\n  \"longitude\": 49.8671,\n  \"depth\": 15.2,\n  \"status\": \"reviewed\",\n  \"tsunami\": false,\n  \"earthquake_type\": \"earthquake\"\n}"
+        },
+        "url": "{{base_url}}/earthquakes"
+      }
+    },
+    {
+      "name": "Update Earthquake",
+      "request": {
+        "method": "PATCH",
+        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{token}}", "type": "string"}]},
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"magnitude\": 5.1,\n  \"status\": \"reviewed\"\n}"
+        },
+        "url": "{{base_url}}/earthquakes/1"
+      }
+    },
+    {
+      "name": "Delete Earthquake",
+      "request": {
+        "method": "DELETE",
+        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{token}}", "type": "string"}]},
+        "url": "{{base_url}}/earthquakes/1"
+      }
+    }
+  ]
+}
