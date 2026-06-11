@@ -277,6 +277,43 @@ Use the token in protected requests:
 Authorization: Bearer <access_token>
 ```
 
+## OAuth2 Bearer Token Authentication
+
+- The API uses `OAuth2PasswordBearer` from FastAPI for authentication.
+- Register a user with `POST /auth/register` (JSON body).
+- Login with `POST /auth/login` using `application/x-www-form-urlencoded`.
+- On successful login the API returns:
+
+```json
+{
+  "access_token": "<token>",
+  "token_type": "bearer"
+}
+```
+
+- Send the token in requests that require authentication using the `Authorization: Bearer <token>` header.
+- Public GET endpoints (`/` and `/earthquakes` and `/earthquakes/{id}`) do not require authentication.
+- Endpoints that create/update/delete earthquakes and `GET /auth/me` require a valid OAuth2 Bearer token.
+
+### Testing with Swagger (/docs)
+
+- Open `/docs`, click the "Authorize" button, and select the `OAuth2Password` entry.
+- You may paste a bearer token there or use a token obtained from `POST /auth/login`.
+
+### Environment variables used for JWT
+
+- `SECRET_KEY` — signing secret for JWT tokens.
+- `JWT_ALGORITHM` — algorithm used for signing (e.g. `HS256`).
+- `ACCESS_TOKEN_EXPIRE_MINUTES` — token lifetime in minutes.
+
+# Testing (quick)
+
+1. Register a user: `POST /auth/register` with JSON body (see examples above).
+2. Login: `POST /auth/login` with form data `username` and `password` to receive the access token.
+3. Click `Authorize` in Swagger and paste the token, or add header `Authorization: Bearer <token>` when using curl/Postman.
+4. Test protected endpoints (`POST`/`PUT`/`PATCH`/`DELETE` under `/earthquakes`) using the token.
+5. Public GET endpoints work without a token.
+
 ---
 
 ## Docker

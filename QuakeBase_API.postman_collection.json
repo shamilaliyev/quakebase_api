@@ -1,108 +1,236 @@
 {
   "info": {
+    "_postman_id": "quakebase-api-collection",
     "name": "QuakeBase API",
-    "description": "Postman collection for QuakeBase API. Replace {{base_url}} with your local or deployed URL.",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman collection for QuakeBase API — includes public endpoints, auth, and protected CRUD requests."
   },
   "variable": [
     {
       "key": "base_url",
-      "value": "http://127.0.0.1:8000"
+      "value": "https://quakebase-api.onrender.com",
+      "type": "string"
     },
     {
-      "key": "token",
-      "value": ""
+      "key": "access_token",
+      "value": "",
+      "type": "string"
     }
   ],
   "item": [
     {
-      "name": "Root",
+      "name": "Home",
       "request": {
         "method": "GET",
-        "url": "{{base_url}}/"
-      }
-    },
-    {
-      "name": "Register",
-      "request": {
-        "method": "POST",
-        "header": [{"key": "Content-Type", "value": "application/json"}],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"username\": \"shamil\",\n  \"email\": \"shamil@example.com\",\n  \"password\": \"password123\"\n}"
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/",
+          "host": ["{{base_url}}"],
+          "path": ["/"]
         },
-        "url": "{{base_url}}/auth/register"
+        "description": "API root and health check"
       }
     },
     {
-      "name": "Login",
+      "name": "Get Earthquakes",
       "request": {
-        "method": "POST",
-        "header": [{"key": "Content-Type", "value": "application/x-www-form-urlencoded"}],
-        "body": {
-          "mode": "urlencoded",
-          "urlencoded": [
-            {"key": "username", "value": "shamil", "type": "text"},
-            {"key": "password", "value": "password123", "type": "text"}
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/earthquakes?page=1&limit=20",
+          "host": ["{{base_url}}"],
+          "path": ["earthquakes"],
+          "query": [
+            { "key": "page", "value": "1" },
+            { "key": "limit", "value": "20" }
           ]
         },
-        "url": "{{base_url}}/auth/login"
-      }
-    },
-    {
-      "name": "Me",
-      "request": {
-        "method": "GET",
-        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{token}}", "type": "string"}]},
-        "url": "{{base_url}}/auth/me"
-      }
-    },
-    {
-      "name": "List Earthquakes",
-      "request": {
-        "method": "GET",
-        "url": "{{base_url}}/earthquakes?page=1&limit=20"
+        "description": "List earthquakes (public) — pagination max 20"
       }
     },
     {
       "name": "Get Earthquake By ID",
       "request": {
         "method": "GET",
-        "url": "{{base_url}}/earthquakes/1"
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/earthquakes/1",
+          "host": ["{{base_url}}"],
+          "path": ["earthquakes","1"]
+        },
+        "description": "Get earthquake details by ID (public)"
+      }
+    },
+    {
+      "name": "Filter Earthquakes By Magnitude",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/earthquakes?page=1&limit=20&min_magnitude=5",
+          "host": ["{{base_url}}"],
+          "path": ["earthquakes"],
+          "query": [
+            { "key": "page", "value": "1" },
+            { "key": "limit", "value": "20" },
+            { "key": "min_magnitude", "value": "5" }
+          ]
+        },
+        "description": "Filter earthquakes by minimum magnitude (public)"
+      }
+    },
+    {
+      "name": "Register User",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"testuser@example.com\",\n  \"password\": \"test12345\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/register",
+          "host": ["{{base_url}}"],
+          "path": ["auth","register"]
+        },
+        "description": "Register a new user. Returns the created user (no token)."
+      }
+    },
+    {
+      "name": "Login User",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "username", "value": "testuser", "type": "text" },
+            { "key": "password", "value": "test12345", "type": "text" }
+          ]
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/login",
+          "host": ["{{base_url}}"],
+          "path": ["auth","login"]
+        },
+        "description": "Login with username (or email) and password. Saves access_token to collection variable on success."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "  var json = pm.response.json();",
+              "  if (json && json.access_token) {",
+              "    pm.collectionVariables.set('access_token', json.access_token);",
+              "    console.log('Saved access_token to collection variable.');",
+              "  } else {",
+              "    console.log('No access_token in response');",
+              "  }",
+              "} else {",
+              "  console.log('Login failed with status', pm.response.code);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Current User",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+        "url": {
+          "raw": "{{base_url}}/auth/me",
+          "host": ["{{base_url}}"],
+          "path": ["auth","me"]
+        },
+        "description": "Get current authenticated user (requires Bearer token)."
       }
     },
     {
       "name": "Create Earthquake",
       "request": {
         "method": "POST",
-        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{token}}", "type": "string"}]},
-        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"usgs_id\": \"manual-001\",\n  \"place\": \"Baku, Azerbaijan region\",\n  \"magnitude\": 4.5,\n  \"time\": \"2026-06-07T12:00:00Z\",\n  \"latitude\": 40.4093,\n  \"longitude\": 49.8671,\n  \"depth\": 15.2,\n  \"status\": \"reviewed\",\n  \"tsunami\": false,\n  \"earthquake_type\": \"earthquake\"\n}"
+          "raw": "{\n  \"usgs_id\": \"custom-test-001\",\n  \"place\": \"Baku, Azerbaijan\",\n  \"magnitude\": 4.5,\n  \"time\": \"2026-06-07T20:00:00Z\",\n  \"latitude\": 40.4093,\n  \"longitude\": 49.8671,\n  \"depth\": 10.5,\n  \"status\": \"reviewed\",\n  \"tsunami\": false,\n  \"earthquake_type\": \"earthquake\"\n}",
+          "options": { "raw": { "language": "json" } }
         },
-        "url": "{{base_url}}/earthquakes"
+        "url": {
+          "raw": "{{base_url}}/earthquakes",
+          "host": ["{{base_url}}"],
+          "path": ["earthquakes"]
+        },
+        "description": "Create a new earthquake (protected)."
       }
     },
     {
-      "name": "Update Earthquake",
+      "name": "PUT Update Earthquake",
       "request": {
-        "method": "PATCH",
-        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{token}}", "type": "string"}]},
-        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"magnitude\": 5.1,\n  \"status\": \"reviewed\"\n}"
+          "raw": "{\n  \"usgs_id\": \"custom-test-001\",\n  \"place\": \"Baku, Azerbaijan\",\n  \"magnitude\": 4.6,\n  \"time\": \"2026-06-07T20:00:00Z\",\n  \"latitude\": 40.4093,\n  \"longitude\": 49.8671,\n  \"depth\": 10.5,\n  \"status\": \"reviewed\",\n  \"tsunami\": false,\n  \"earthquake_type\": \"earthquake\"\n}",
+          "options": { "raw": { "language": "json" } }
         },
-        "url": "{{base_url}}/earthquakes/1"
+        "url": {
+          "raw": "{{base_url}}/earthquakes/1",
+          "host": ["{{base_url}}"],
+          "path": ["earthquakes","1"]
+        },
+        "description": "Replace an existing earthquake (protected)."
+      }
+    },
+    {
+      "name": "PATCH Update Earthquake",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"magnitude\": 5.1\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base_url}}/earthquakes/1",
+          "host": ["{{base_url}}"],
+          "path": ["earthquakes","1"]
+        },
+        "description": "Partially update an earthquake (protected)."
       }
     },
     {
       "name": "Delete Earthquake",
       "request": {
         "method": "DELETE",
-        "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{token}}", "type": "string"}]},
-        "url": "{{base_url}}/earthquakes/1"
+        "header": [],
+        "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
+        "url": {
+          "raw": "{{base_url}}/earthquakes/1",
+          "host": ["{{base_url}}"],
+          "path": ["earthquakes","1"]
+        },
+        "description": "Delete an earthquake by ID (protected)."
       }
     }
   ]
