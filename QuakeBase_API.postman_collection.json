@@ -3,7 +3,7 @@
     "_postman_id": "quakebase-api-collection",
     "name": "QuakeBase API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Postman collection for QuakeBase API — includes public endpoints, auth, and protected CRUD requests."
+    "description": "QuakeBase API Postman collection.\n\nThis collection demonstrates the public endpoints and protected CRUD operations for earthquakes. Authentication uses OAuth2 Bearer tokens: first register a user via /auth/register, then obtain a token using /auth/login. Use the returned access token for protected endpoints by running the Login request (it saves the token into the collection variable `access_token`). Protected requests use Bearer Token auth with the `{{access_token}}` collection variable."
   },
   "variable": [
     {
@@ -19,7 +19,7 @@
   ],
   "item": [
     {
-      "name": "Home",
+      "name": "GET Home",
       "request": {
         "method": "GET",
         "header": [],
@@ -32,7 +32,7 @@
       }
     },
     {
-      "name": "Get Earthquakes",
+      "name": "GET Get Earthquakes",
       "request": {
         "method": "GET",
         "header": [],
@@ -45,11 +45,11 @@
             { "key": "limit", "value": "20" }
           ]
         },
-        "description": "List earthquakes (public) — pagination max 20"
+        "description": "List earthquakes (public) — pagination"
       }
     },
     {
-      "name": "Get Earthquake By ID",
+      "name": "GET Get Earthquake By ID",
       "request": {
         "method": "GET",
         "header": [],
@@ -62,7 +62,7 @@
       }
     },
     {
-      "name": "Filter Earthquakes By Magnitude",
+      "name": "GET Filter Earthquakes By Magnitude",
       "request": {
         "method": "GET",
         "header": [],
@@ -80,7 +80,7 @@
       }
     },
     {
-      "name": "Register User",
+      "name": "POST Register User",
       "request": {
         "method": "POST",
         "header": [
@@ -88,7 +88,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"testuser@example.com\",\n  \"password\": \"test12345\"\n}",
+          "raw": "{\n  \"username\": \"testuser_postman\",\n  \"email\": \"testuser_postman@example.com\",\n  \"password\": \"test12345\"\n}",
           "options": { "raw": { "language": "json" } }
         },
         "url": {
@@ -96,11 +96,11 @@
           "host": ["{{base_url}}"],
           "path": ["auth","register"]
         },
-        "description": "Register a new user. Returns the created user (no token)."
+        "description": "Register a new user. Use these credentials to log in and obtain an access token."
       }
     },
     {
-      "name": "Login User",
+      "name": "POST Login User",
       "request": {
         "method": "POST",
         "header": [
@@ -109,7 +109,7 @@
         "body": {
           "mode": "urlencoded",
           "urlencoded": [
-            { "key": "username", "value": "testuser", "type": "text" },
+            { "key": "username", "value": "testuser_postman", "type": "text" },
             { "key": "password", "value": "test12345", "type": "text" }
           ]
         },
@@ -118,23 +118,16 @@
           "host": ["{{base_url}}"],
           "path": ["auth","login"]
         },
-        "description": "Login with username (or email) and password. Saves access_token to collection variable on success."
+        "description": "Login with username (or email) and password. On success the response contains `access_token`. Run tests to save it into `access_token` collection variable."
       },
       "event": [
         {
           "listen": "test",
           "script": {
             "exec": [
-              "if (pm.response.code === 200) {",
-              "  var json = pm.response.json();",
-              "  if (json && json.access_token) {",
-              "    pm.collectionVariables.set('access_token', json.access_token);",
-              "    console.log('Saved access_token to collection variable.');",
-              "  } else {",
-              "    console.log('No access_token in response');",
-              "  }",
-              "} else {",
-              "  console.log('Login failed with status', pm.response.code);",
+              "const jsonData = pm.response.json();",
+              "if (jsonData.access_token) {",
+              "  pm.collectionVariables.set(\"access_token\", jsonData.access_token);",
               "}"
             ],
             "type": "text/javascript"
@@ -143,7 +136,7 @@
       ]
     },
     {
-      "name": "Get Current User",
+      "name": "GET Current User",
       "request": {
         "method": "GET",
         "header": [],
@@ -157,7 +150,7 @@
       }
     },
     {
-      "name": "Create Earthquake",
+      "name": "POST Create Earthquake",
       "request": {
         "method": "POST",
         "header": [
@@ -166,7 +159,7 @@
         "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"usgs_id\": \"custom-test-001\",\n  \"place\": \"Baku, Azerbaijan\",\n  \"magnitude\": 4.5,\n  \"time\": \"2026-06-07T20:00:00Z\",\n  \"latitude\": 40.4093,\n  \"longitude\": 49.8671,\n  \"depth\": 10.5,\n  \"status\": \"reviewed\",\n  \"tsunami\": false,\n  \"earthquake_type\": \"earthquake\"\n}",
+          "raw": "{\n  \"usgs_id\": \"custom-postman-test-001\",\n  \"place\": \"Baku, Azerbaijan\",\n  \"magnitude\": 4.5,\n  \"time\": \"2026-06-07T20:00:00Z\",\n  \"latitude\": 40.4093,\n  \"longitude\": 49.8671,\n  \"depth\": 10.5,\n  \"status\": \"reviewed\",\n  \"tsunami\": false,\n  \"earthquake_type\": \"earthquake\"\n}",
           "options": { "raw": { "language": "json" } }
         },
         "url": {
@@ -187,7 +180,7 @@
         "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }] },
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"usgs_id\": \"custom-test-001\",\n  \"place\": \"Baku, Azerbaijan\",\n  \"magnitude\": 4.6,\n  \"time\": \"2026-06-07T20:00:00Z\",\n  \"latitude\": 40.4093,\n  \"longitude\": 49.8671,\n  \"depth\": 10.5,\n  \"status\": \"reviewed\",\n  \"tsunami\": false,\n  \"earthquake_type\": \"earthquake\"\n}",
+          "raw": "{\n  \"usgs_id\": \"custom-postman-test-001\",\n  \"place\": \"Baku, Azerbaijan\",\n  \"magnitude\": 4.8,\n  \"time\": \"2026-06-07T20:00:00Z\",\n  \"latitude\": 40.4093,\n  \"longitude\": 49.8671,\n  \"depth\": 10.5,\n  \"status\": \"reviewed\",\n  \"tsunami\": false,\n  \"earthquake_type\": \"earthquake\"\n}",
           "options": { "raw": { "language": "json" } }
         },
         "url": {
@@ -195,11 +188,11 @@
           "host": ["{{base_url}}"],
           "path": ["earthquakes","1"]
         },
-        "description": "Replace an existing earthquake (protected)."
+        "description": "Replace an existing earthquake with a full earthquake object (protected)."
       }
     },
     {
-      "name": "PATCH Update Earthquake",
+      "name": "PATCH Partially Update Earthquake",
       "request": {
         "method": "PATCH",
         "header": [
@@ -220,7 +213,7 @@
       }
     },
     {
-      "name": "Delete Earthquake",
+      "name": "DELETE Delete Earthquake",
       "request": {
         "method": "DELETE",
         "header": [],
